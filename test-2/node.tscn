@@ -3,8 +3,8 @@
 [ext_resource type="Texture2D" uid="uid://cteh3jkjnohal" path="res://icon.svg" id="1_sy5k4"]
 [ext_resource type="Script" uid="uid://m76au25epus2" path="res://CharacterController.cs" id="2_j2q8x"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_j2q8x"]
-radius = 39.26
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_112p8"]
+size = Vector2(75, 75)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_sy5k4"]
 size = Vector2(128, 128)
@@ -14,20 +14,28 @@ size = Vector2(1200, 20)
 
 [node name="Node" type="Node"]
 
+[node name="Cursor" type="Sprite2D" parent="."]
+self_modulate = Color(1, 1, 1, 0.5)
+z_index = 1
+z_as_relative = false
+position = Vector2(678, 428.6)
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("1_sy5k4")
+
 [node name="Pot" type="RigidBody2D" parent="."]
 position = Vector2(678, 275)
-mass = 1000.0
+mass = 30.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Pot"]
-shape = SubResource("CircleShape2D_j2q8x")
+shape = SubResource("RectangleShape2D_112p8")
 
 [node name="Sprite2D" type="Sprite2D" parent="Pot"]
-scale = Vector2(0.613, 0.613)
+scale = Vector2(0.585, 0.585)
 texture = ExtResource("1_sy5k4")
 
 [node name="PinJoint2D" type="PinJoint2D" parent="Pot"]
-node_a = NodePath("../Hammer")
-node_b = NodePath("..")
+node_a = NodePath("..")
+node_b = NodePath("../Hammer")
 
 [node name="Hammer" type="RigidBody2D" parent="Pot"]
 gravity_scale = 0.0
@@ -52,5 +60,17 @@ position = Vector2(573, 637)
 shape = SubResource("RectangleShape2D_j2q8x")
 
 [node name="Sprite2D" type="Sprite2D" parent="StaticBody2D"]
+scale = Vector2(9.4, 0.2)
+texture = ExtResource("1_sy5k4")
+
+[node name="StaticBody2D2" type="StaticBody2D" parent="."]
+position = Vector2(391, 460)
+rotation = 1.5707964
+scale = Vector2(-0.08370191, 1.6219733)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D2"]
+shape = SubResource("RectangleShape2D_j2q8x")
+
+[node name="Sprite2D" type="Sprite2D" parent="StaticBody2D2"]
 scale = Vector2(9.4, 0.2)
 texture = ExtResource("1_sy5k4")
