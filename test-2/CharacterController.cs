@@ -12,13 +12,13 @@ public partial class CharacterController : RigidBody2D
 	private CollisionShape2D collisionShape;
 	private Sprite2D sprite2D;
 	private Sprite2D mouse;
+	private float sensitivity = 0.3f;
 
 	//The default scale and position for both the CollisionShape and Sprite2D
 	private Godot.Vector2 defaultScale = new Godot.Vector2(0.2f, 1.2f);
 	private Godot.Vector2 defaultPosition = new Godot.Vector2(0, 76.8f);
 
 	private double timeSinceLastMouseMove = 0;
-	private const double mouseStopDelay = 0.01;
 	private Godot.Vector2 mouseOffset = new Godot.Vector2(0, 0);
 
 	
@@ -52,12 +52,11 @@ public partial class CharacterController : RigidBody2D
 	//
 	public override void _PhysicsProcess(double delta)
 	{
-		this.LinearVelocity = new Godot.Vector2(0, 0);
+		//this.LinearVelocity = new Godot.Vector2(0, 0);
 		this.AngularVelocity = 0;
 
-
-		mouse.GlobalPosition = this.GlobalPosition + new Godot.Vector2(0, 128 * collisionShape.Scale.Y).Rotated(this.GlobalRotation) + mouseOffset;
-		Godot.Vector2 desiredVector = (this.GlobalPosition + new Godot.Vector2(0, 128 * collisionShape.Scale.Y).Rotated(this.GlobalRotation) + mouseOffset) - this.GlobalPosition;
+		mouse.GlobalPosition = this.GlobalPosition + new Godot.Vector2(0, 128 * collisionShape.Scale.Y).Rotated(this.GlobalRotation) + (mouseOffset * sensitivity);
+		Godot.Vector2 desiredVector = (this.GlobalPosition + new Godot.Vector2(0, 128 * collisionShape.Scale.Y).Rotated(this.GlobalRotation) + (mouseOffset * sensitivity)) - this.GlobalPosition;
 
 		//Caculates the moment of interia depending on the Y scale (this assumes mass = 1, default height and width is 128, and that X scale is always 0.2)
 		float momentOfIntertia = (655.36f + ((128 * collisionShape.Scale.Y) * (128 * collisionShape.Scale.Y))) / 12 + (64 * collisionShape.Scale.Y);
@@ -65,7 +64,7 @@ public partial class CharacterController : RigidBody2D
 		//(Desired angle - current rotation - 90 degrees) * Moment of Inertia * a big number
 		//Multipying by moment of interia should make angular velocity the same regardless of Y scale
 		//ApplyTorqueImpulse(Mathf.Wrap((mouse.GlobalPosition - this.GlobalPosition).Angle() - this.GlobalRotation - Mathf.Pi / 2, -Mathf.Pi, Mathf.Pi) * momentOfIntertia * 500);
-		ApplyTorqueImpulse(Mathf.Wrap((desiredVector).Angle() - this.GlobalRotation - Mathf.Pi / 2, -Mathf.Pi, Mathf.Pi) * momentOfIntertia * 500);
+		ApplyTorqueImpulse(Mathf.Wrap((desiredVector).Angle() - this.GlobalRotation - Mathf.Pi / 2, -Mathf.Pi, Mathf.Pi) * momentOfIntertia * 700);
 
 		//Generates a scalar value to apply to the default scale and default position of the collision shape and sprite
 		//float scalar = (mouse.GlobalPosition - this.GlobalPosition).Length() / (128 * defaultScale.Y);
@@ -73,7 +72,7 @@ public partial class CharacterController : RigidBody2D
 
 		//The max and min that the scalar value can be
 		float maxScalarValue = 1f;
-		float minScalarValue = 0.01f;
+		float minScalarValue = 0.001f;
 
 		//Makes sure the scalar doesn't exceed its max or min value
 		if (scalar >= maxScalarValue)
@@ -92,6 +91,13 @@ public partial class CharacterController : RigidBody2D
 		sprite2D.Position = new Godot.Vector2(sprite2D.Position.X, defaultPosition.Y * scalar);
 
 		mouseOffset = new Godot.Vector2(0, 0);
+
+		//Caps linear velocity
+		int maxVelocity = 500;
+		if(this.LinearVelocity.Length() > maxVelocity)
+		{
+			this.LinearVelocity = this.LinearVelocity.Normalized() * maxVelocity;
+		}
 
 		/*mouse.GlobalPosition = this.GlobalPosition + new Godot.Vector2(0, 128 * collisionShape.Scale.Y).Rotated(this.GlobalRotation);
 		mouse.Translate(mouseOffset);
@@ -131,7 +137,6 @@ public partial class CharacterController : RigidBody2D
 			//GD.Print($"Mouse moved: {relative}, Current position: {position}");
 
 			mouseOffset += relative;
-			timeSinceLastMouseMove = 0;
 		}
 
 		//When a mouse button is released
