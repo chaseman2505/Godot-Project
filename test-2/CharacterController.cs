@@ -11,7 +11,8 @@ public partial class CharacterController : RigidBody2D
 	//Pogostick?
 	private CollisionShape2D collisionShape;
 	private Sprite2D sprite2D;
-	private Sprite2D mouse;
+	private Sprite2D mouse;	
+	private RigidBody2D pot;
 	private float sensitivity = 0.3f;
 
 	//The default scale and position for both the CollisionShape and Sprite2D
@@ -28,6 +29,7 @@ public partial class CharacterController : RigidBody2D
 		collisionShape = GetChild<CollisionShape2D>(0);
 		sprite2D = GetChild<Sprite2D>(1);
 		mouse = GetNode<Sprite2D>("../../Cursor");
+		pot = GetParent<RigidBody2D>();
 
 		//Engine.TimeScale = 2f;
 		ContinuousCd = RigidBody2D.CcdMode.CastShape;
@@ -98,6 +100,9 @@ public partial class CharacterController : RigidBody2D
 		{
 			this.LinearVelocity = this.LinearVelocity.Normalized() * maxVelocity;
 		}
+
+		//Locks rotation of pot
+		pot.Rotation = 0;
 
 		/*mouse.GlobalPosition = this.GlobalPosition + new Godot.Vector2(0, 128 * collisionShape.Scale.Y).Rotated(this.GlobalRotation);
 		mouse.Translate(mouseOffset);
